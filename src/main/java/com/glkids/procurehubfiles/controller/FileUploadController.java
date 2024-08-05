@@ -4,15 +4,17 @@ import com.glkids.procurehubfiles.entity.QuotationFile;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -73,5 +75,21 @@ public class FileUploadController {
         }
         System.out.println("멈춘시간속 잠든 너를 찾아가 아무링 ㅐ써 도 결국 너으 ㅣ곁이걸");
         return ResponseEntity.ok(QuotationFile.builder().name(originalFileName).url(savePath).uuid(uuid).build());
+    }
+    @GetMapping("/display")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam("file") MultipartFile file) {
+        ResponseEntity<byte[]> result = null;
+        try {
+            String srcFileNmae = URLDecoder.decode(String.valueOf(file),"UTF-8");
+            File file1 = new File(savePath + File.separator + srcFileNmae);
+            HttpHeaders header = new HttpHeaders();
+
+            header.add("Content-Type" , Files.probeContentType(file1.toPath()));
+            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file1),header,HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return result;
     }
 }
