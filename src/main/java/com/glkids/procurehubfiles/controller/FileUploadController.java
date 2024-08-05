@@ -2,6 +2,7 @@ package com.glkids.procurehubfiles.controller;
 
 import com.glkids.procurehubfiles.entity.QuotationFile;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
+@RequiredArgsConstructor
 public class FileUploadController {
 
     private final HttpServletResponse httpServletResponse;
@@ -26,13 +28,7 @@ public class FileUploadController {
     private String mainServerUrl;
 
     private final String savePath = "C:/upload/";
-
     private final RestTemplate restTemplate;
-
-    public FileUploadController(RestTemplate restTemplate, HttpServletResponse httpServletResponse) {
-        this.restTemplate = restTemplate;
-        this.httpServletResponse = httpServletResponse;
-    }
 
     @PostMapping("/uploadFile")
     public ResponseEntity<QuotationFile> uploadFile(@RequestParam("file") MultipartFile[] uploadFiles) {
