@@ -20,20 +20,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 public class FileUploadController {
 
     private final HttpServletResponse httpServletResponse;
-    @Value("${main.server.url}")
-    private String mainServerUrl;
 
-    private final String savePath = "C:/upload/";
+    private final String savePath = "/home/mit/upload/";
     private final RestTemplate restTemplate;
 
-    @PostMapping("/uploadFile")
-    public ResponseEntity<QuotationFile> uploadFile(@RequestParam("file") MultipartFile[] uploadFiles) {
+    @PostMapping("/{folder}/uploadFile")
+    public ResponseEntity<QuotationFile> uploadFile(@RequestParam("file") MultipartFile[] uploadFiles, @PathVariable String folder) {
 
         String originalFileName = "";
         String uuid = "";
@@ -46,7 +44,7 @@ public class FileUploadController {
                 saveFileName = uuid + "_" + originalFileName;
 
                 // 파일 저장 경로
-                String saveFullPath = savePath + saveFileName;
+                String saveFullPath = savePath + folder + "/" + saveFileName;
                 File saveFile = new File(saveFullPath);
                 file.transferTo(saveFile);
 
@@ -61,33 +59,34 @@ public class FileUploadController {
                 fileInfo.put("regdate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 fileInfo.put("moddate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
-//                // 메인 서버에 파일 정보 전송
-//                ResponseEntity<String> response = restTemplate.postForEntity(
-//                        mainServerUrl + "/contractor/quoregister",
-//                        fileInfo,
-//                        String.class
-//                );
 
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.status(500).body(null);
             }
         }
-        System.out.println("멈춘시간속 잠든 너를 찾아가 아무링 ㅐ써 도 결국 너으 ㅣ곁이걸");
         return ResponseEntity.ok(QuotationFile.builder().name(originalFileName).url(savePath).uuid(uuid).build());
     }
-    @GetMapping("/display")
-    public ResponseEntity<byte[]> downloadFile(@RequestParam("file") MultipartFile file) {
+    @GetMapping("/{folder}/display")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam("file") String fileName, @PathVariable String folder) {
         ResponseEntity<byte[]> result = null;
         try {
-            String srcFileNmae = URLDecoder.decode(String.valueOf(file),"UTF-8");
-            File file1 = new File(savePath + File.separator + srcFileNmae);
+            // 파일 이름을 UTF-8로 디코딩
+            String srcFileName = URLDecoder.decode(fileName, "UTF-8");
+
+            // 파일 경로 생성
+            File file = new File(savePath + folder + File.separator + srcFileName);
+
+            // HTTP 헤더 생성
             HttpHeaders header = new HttpHeaders();
 
-            header.add("Content-Type" , Files.probeContentType(file1.toPath()));
-            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file1),header,HttpStatus.OK);
-        }
-        catch (Exception e) {
+            // 파일의 MIME 타입 설정
+            header.add("Content-Type", Files.probeContentType(file.toPath()));
+
+            // 파일 내용을 바이트 배열로 변환하여 HTTP 응답 본문으로 설정
+            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+        } catch (Exception e) {
+            // 오류가 발생한 경우 500 상태 코드 반환
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return result;
