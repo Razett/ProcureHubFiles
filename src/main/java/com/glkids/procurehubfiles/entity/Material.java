@@ -48,9 +48,5 @@ public class Material extends BaseEntity {
     @JoinColumn(nullable = false)
     private MaterialWarehouse materialWarehouse;
 
-    @Builder.Default
-    @Enumerated(EnumType.ORDINAL)
-    @Column(nullable = false)
-    private MaterialStatus status = MaterialStatus.OK;
 
 }
