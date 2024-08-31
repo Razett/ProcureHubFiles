@@ -1,6 +1,5 @@
 package com.glkids.procurehubfiles.entity;
 
-import com.glkids.procurehub.status.MaterialStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
