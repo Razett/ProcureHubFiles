@@ -16,7 +16,7 @@ import lombok.*;
  * <p>{@code mngrName} - 담당자 이름 [Varchar(12), Nullable]</p>
  * <p>{@code mngrPhone} - 담당자 전화번호 [Varchar(11) Nullable]</p>
  * <p>{@code mngrAddress} - 담당자 이메일 [Varchar(50) Nullable]</p>
- * <p>{@code bank} - 은행 명 [Varchar(30), Nullable]</p>
+ * <p>{@code bank} - 은행명 [Varchar(30), Nullable]</p>
  * <p>{@code accountNum} - 계좌 번호 [Varchar(20), Nullable]</p>
  */
 @NoArgsConstructor
@@ -35,6 +35,9 @@ public class Contractor extends BaseEntity{
 
     @Column(length = 11, nullable = false)
     private String phone;
+
+    @Column(length = 6, nullable = false)
+    private String postcode;
 
     @Column(length = 100, nullable = false)
     private String address1;
@@ -56,4 +59,5 @@ public class Contractor extends BaseEntity{
 
     @Column(length = 20, nullable = true)
     private String accountNum;
+
 }

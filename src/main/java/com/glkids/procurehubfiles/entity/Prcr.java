@@ -19,9 +19,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 @Getter
 @Entity
+@Setter
 public class Prcr extends BaseEntity {
 
     @Id
@@ -48,4 +48,6 @@ public class Prcr extends BaseEntity {
 
     @Column(nullable = false)
     private Integer status;
-}
+
+    }
+

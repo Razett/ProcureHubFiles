@@ -3,6 +3,8 @@ package com.glkids.procurehubfiles.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 /**
  * <b>사원</b>
  *
@@ -16,8 +18,10 @@ import lombok.*;
 @Builder
 @ToString
 @Getter
+@Setter
 @Entity
-public class Emp extends BaseEntity {
+public class Emp extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     private Long empno;
@@ -25,10 +29,10 @@ public class Emp extends BaseEntity {
     @Column(length = 12, nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     private Dept dept;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 61, nullable = false)
     private String pw;
 }
